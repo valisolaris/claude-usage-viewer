@@ -6,6 +6,14 @@
   "publisher": "valisolaris",
   "license": "MIT",
   "icon": "resources/icon.png",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/valisolaris/claude-usage-viewer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/valisolaris/claude-usage-viewer/issues"
+  },
+  "homepage": "https://github.com/valisolaris/claude-usage-viewer#readme",
   "engines": {
     "vscode": "^1.85.0"
   },
