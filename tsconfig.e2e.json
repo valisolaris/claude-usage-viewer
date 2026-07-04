@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "noEmit": false,
+    "outDir": "out"
+  },
+  "include": ["src/test/runTest.ts", "src/test/suite/**/*.ts"],
+  "exclude": ["node_modules", ".vscode-test", "out"]
+}

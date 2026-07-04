@@ -1,0 +1,8 @@
+thinking-dashboard/
+.omc/
+.claude/
+node_modules/
+out/
+dist/
+*.vsix
+.vscode-test/

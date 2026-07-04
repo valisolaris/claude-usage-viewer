@@ -1,0 +1,143 @@
+{
+  "name": "claude-usage-viewer",
+  "displayName": "Claude Usage Viewer",
+  "description": "Claude Codeの公式使用率(5時間/週次、statusline経由)と推定コスト・トークン数(ローカルログ集計)をVS Codeステータスバーに表示します。認証情報に触れず、既定ではネットワーク通信も行いません。",
+  "version": "0.2.0",
+  "publisher": "valisolaris",
+  "license": "MIT",
+  "icon": "resources/icon.png",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other",
+    "AI"
+  ],
+  "keywords": [
+    "claude",
+    "claude code",
+    "anthropic",
+    "usage",
+    "status bar",
+    "cost tracking",
+    "rate limit"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "claudeUsageViewer.showDetails",
+        "title": "Claude Usage: Show Details"
+      },
+      {
+        "command": "claudeUsageViewer.refreshNow",
+        "title": "Claude Usage: Refresh Now"
+      },
+      {
+        "command": "claudeUsageViewer.setupStatusline",
+        "title": "Claude Usage: Set Up Statusline Bridge"
+      }
+    ],
+    "configuration": {
+      "title": "Claude Usage Viewer",
+      "properties": {
+        "claudeUsageViewer.pollingIntervalSeconds": {
+          "type": "number",
+          "default": 300,
+          "minimum": 30,
+          "description": "使用状況を取得する間隔(秒)。"
+        },
+        "claudeUsageViewer.showFiveHour": {
+          "type": "boolean",
+          "default": true,
+          "description": "5時間ウィンドウの使用率を表示する。"
+        },
+        "claudeUsageViewer.showWeekly": {
+          "type": "boolean",
+          "default": true,
+          "description": "週次(7日)使用率を表示する。"
+        },
+        "claudeUsageViewer.showCost": {
+          "type": "boolean",
+          "default": true,
+          "description": "ローカルJSONLログから推定したコスト/トークン数をツールチップに表示する。"
+        },
+        "claudeUsageViewer.showCredit": {
+          "type": "boolean",
+          "default": false,
+          "description": "(オプトイン)クレジット(extra usage)使用額を表示する。有効にした場合のみ非公式API(/api/oauth/usage)への通信と .credentials.json の読み取りを行う。既定OFFでは認証情報に一切触れない。"
+        },
+        "claudeUsageViewer.showContextPercentage": {
+          "type": "boolean",
+          "default": false,
+          "description": "(オプトイン)コンテキスト使用率を表示する(statuslineブリッジ経由)。"
+        },
+        "claudeUsageViewer.warningThreshold": {
+          "type": "number",
+          "default": 70,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "警告表示に切り替える使用率のしきい値(%)。"
+        },
+        "claudeUsageViewer.criticalThreshold": {
+          "type": "number",
+          "default": 90,
+          "minimum": 0,
+          "maximum": 100,
+          "description": "危険表示に切り替える使用率のしきい値(%)。"
+        },
+        "claudeUsageViewer.statusBarAlignment": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "default": "right",
+          "description": "ステータスバー項目の表示位置。"
+        },
+        "claudeUsageViewer.credentialsPathOverride": {
+          "type": "string",
+          "default": "",
+          "description": "`.credentials.json` のパスを明示的に指定する(CLAUDE_CONFIG_DIR未設定環境・ポータブル環境向け)。空の場合は自動解決する。showCredit有効時のみ使用される。"
+        },
+        "claudeUsageViewer.statuslineStatePathOverride": {
+          "type": "string",
+          "default": "",
+          "description": "`statusline-state.json` のパスを明示的に指定する。空の場合は CLAUDE_CONFIG_DIR または ~/.claude 配下を自動解決する。"
+        },
+        "claudeUsageViewer.statuslineStaleMinutes": {
+          "type": "number",
+          "default": 15,
+          "minimum": 1,
+          "description": "公式値(5h/週次)の最終受信がこの分数より古い場合、経過時間つきの表示に切り替える(Claude Code非稼働中は更新が止まるのが正常なため、エラーにはしない)。"
+        }
+      }
+    }
+  },
+  "scripts": {
+    "check-types": "tsc --noEmit",
+    "compile": "npm run check-types && node esbuild.js",
+    "watch": "npm-run-all -p watch:*",
+    "watch:esbuild": "node esbuild.js --watch",
+    "watch:tsc": "tsc --noEmit --watch",
+    "package": "npm run check-types && node esbuild.js --production",
+    "pretest:data": "node esbuild.js --test",
+    "test:data": "npm run pretest:data && node --test \"out/test/data/*.test.js\"",
+    "pretest:e2e": "npm run compile && tsc -p tsconfig.e2e.json",
+    "test:e2e": "npm run pretest:e2e && node out/test/runTest.js",
+    "vscode:prepublish": "npm run package"
+  },
+  "devDependencies": {
+    "@types/mocha": "^10.0.7",
+    "@types/node": "^20.14.0",
+    "@types/vscode": "^1.85.0",
+    "@vscode/test-electron": "^2.4.1",
+    "esbuild": "^0.23.0",
+    "mocha": "^10.4.0",
+    "npm-run-all": "^4.1.5",
+    "typescript": "^5.5.0"
+  }
+}
